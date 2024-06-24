@@ -1,0 +1,85 @@
+/* Formulaire
+	Auteur : Jessim LAIB
+	Date : 13/12/2023
+	Description : CSS de la validation  */
+    
+    /* style.css */
+
+/* Réinitialisation des marges et des paddings */
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style du titre */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Style de la section du contrat */
+/* div {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    -moz-box-align: baseline;
+} */
+
+/* Style des div pour les aligner à droite */
+div {
+    display: flexbox;
+    justify-content: space-between;
+    margin: 20px;
+    padding: 1px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    -moz-box-align: baseline;
+}
+
+/* Style de la div alignée à droite */
+.right-div {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    -moz-box-align: baseline;
+}
+
+/* Style des boutons */
+button {
+    margin: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Style des liens dans les boutons */
+button a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Style des numéros de section */
+h2 {
+    margin-top: 20px;
+}
+
+/* Style des listes à puces dans la section du contrat */
+div p div {
+    margin-left: 20px;
+}
+
+.petit {
+    font-size: small;
+}
+
+.date {
+    margin-left: 85%;
+}

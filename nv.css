@@ -1,0 +1,178 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #ffafbd, #ffc3a0); /* Dégradé de rouge et mauve clair */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    transition: background 0.5s ease;
+}
+
+.dark-mode {
+    background: linear-gradient(to right, #141E30, #243B55);
+    color: #ffffff;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 800px;
+    width: 100%;
+    position: relative;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 24px;
+    margin-bottom: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; /* Couleur de fond par défaut */
+    transition: background-color 0.3s ease;
+    border-radius: 34px; /* Forme ronde */
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white; /* Bouton intérieur */
+    transition: transform 0.3s ease;
+    border-radius: 50%; /* Forme ronde */
+}
+
+input:checked + .slider {
+    background-color: #b10f2e; /* Rouge foncé lorsque activé */
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px); /* Déplacement du bouton intérieur */
+}
+
+.slider.round {
+    border-radius: 34px; /* Forme ronde */
+}
+
+/* Beau background pour le switch */
+.switch {
+    background-color: #f0f0f0; /* Couleur de fond */
+    padding: 5px; /* Espacement intérieur */
+    border-radius: 20px; /* Coins arrondis */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre douce */
+}
+
+.switch input:checked + .slider {
+    background-color: #6a0572; /* Violet lorsque activé */
+}
+
+.switch input:checked + .slider:before {
+    background-color: #fff; /* Couleur du bouton intérieur lorsque activé */
+}
+
+
+input:checked + .slider {
+    background: #b10f2e; /* Rouge foncé */
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #b10f2e; /* Rouge foncé */
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 45%;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #6a0572; /* Mauve foncé */
+}
+
+.form-group input, .form-group select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #fff0f5; /* Mauve très clair */
+    border: 1px solid #191346; /* Bordure rouge */
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #6a0572; /* Bordure mauve foncé au focus */
+    outline: none;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btnn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #b10f2e; /* Rouge foncé */
+    border: none;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btnn svg {
+    margin-right: 10px;
+}
+
+.btnn:hover {
+    background: #6a0572; /* Mauve foncé */
+}
+
+#admin {
+    background: #6a0572; /* Mauve foncé */
+    margin-top: 20px;
+}
+
+#admin:hover {
+    background: #251952; /* Rouge foncé */
+}

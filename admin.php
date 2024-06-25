@@ -70,13 +70,13 @@ if ($result->num_rows > 0) {
     <th>Nom</th>
     <th>Prénom</th>
     <th>N° Téléphone</th>
-    <th>Modèle Téléphone</th>
-    <th>IMEI</th>
+    <th>Produit</th>
+    <th>Remarques</th>
     <th>Adresse</th>
     <th>Code Postal</th>
     <th>Ville</th>
     <th>Prix</th>
-    <th>Phones</th>
+    <th>Produits</th>
     <th>Actions</th>
     </tr>
     </thead>
@@ -111,7 +111,7 @@ if ($result->num_rows > 0) {
         <td>";
 
         foreach ($phones as $phone) {
-            echo "Marque: " . $phone['marque'] . "<br>IMEI: " . $phone['imei'] . "<br>Prix: " . $phone['prix'] . "<br><br>";
+            echo "Produit: " . $phone['marque'] . "<br>Remarque: " . $phone['imei'] . "<br>Prix: " . $phone['prix'] . "<br><br>";
         }
 
         echo "</td>
@@ -153,8 +153,8 @@ if ($result->num_rows > 0) {
                     <div class='form-row'>
                         <label>Téléphone $phone_index:</label>
                         <input type='hidden' name='phone_id_".$phone_index."' value='".$phone["id"]."'>
-                        <input type='text' name='autre2_".$phone_index."' value='".$phone["marque"]."' placeholder='Marque et Modèle'>
-                        <input type='text' name='autre3_".$phone_index."' value='".$phone["imei"]."' placeholder='IMEI'>
+                        <input type='text' name='autre2_".$phone_index."' value='".$phone["marque"]."' placeholder='Produit'>
+                        <input type='text' name='autre3_".$phone_index."' value='".$phone["imei"]."' placeholder='Remarque'>
                         <input type='text' name='prix_".$phone_index."' value='".$phone["prix"]."' placeholder='Prix'>
                     </div>";
             $phone_index++;
@@ -186,8 +186,8 @@ $conn->close();
         newPhoneDiv.innerHTML = `
             <label>Téléphone ${index}:</label>
             <input type="hidden" name="new_phone_${index}" value="new">
-            <input type="text" name="autre2_${index}" placeholder="Marque et Modèle" required>
-            <input type="text" name="autre3_${index}" placeholder="IMEI" required>
+            <input type="text" name="autre2_${index}" placeholder="Produit" required>
+            <input type="text" name="autre3_${index}" placeholder="Remarque" required>
             <input type="text" name="prix_${index}" placeholder="Prix" required>
         `;
 

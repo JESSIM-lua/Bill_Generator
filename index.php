@@ -35,7 +35,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="date">Entrez la Date:</label>
-                <input type="date" name="date" required>
+                <input type="date" name="date">
             </div>
             <div class="form-group">
                 <label for="nom">Entrez Le Nom du Client :</label>
@@ -68,14 +68,14 @@
                 <input type="text" name="autre" required>
             </div>
             <div class="form-group">
-                <label for="autre2">Marque et Modèle du téléphone:</label>
+                <label for="autre2"> Produit:</label>
                 <input type="text" name="autre2" required>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="autre3">IMEI du téléphone:</label>
-                <input type="text" name="autre3" required>
+                <label for="autre3">Remarque:</label>
+                <input type="text" name="autre3">
             </div>
             <div class="form-group">
                 <label for="var">Type de Service:</label>
@@ -140,8 +140,8 @@
         newPhoneDiv.className = 'form-group';
         newPhoneDiv.innerHTML = `
             <label>Téléphone ${index}:</label>
-            <input type="text" name="autre2_${index}" placeholder="Marque et Modèle" required><br>
-            <input type="text" name="autre3_${index}" placeholder="IMEI" required><br>
+            <input type="text" name="autre2_${index}" placeholder="Produit" required><br>
+            <input type="text" name="autre3_${index}" placeholder="Remarque" ><br>
             <input type="text" name="prix_${index}" placeholder="€" required>
             <button type="button" class="btnn btnn-small" onclick="supprimerTelephone(this)">Supprimer</button>
             <br>

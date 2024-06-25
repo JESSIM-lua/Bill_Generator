@@ -12,9 +12,18 @@ if ($conn->connect_error) {
     die("La connexion a échoué : " . $conn->connect_error);
 }
 
+// Définir le fuseau horaire de la France
+date_default_timezone_set('Europe/Paris');
+
 // Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $date = $_POST['date'];
+    // Vérifier si la date est fournie et valide, sinon utiliser la date actuelle
+    if (!empty($_POST['date'])) {
+        $date = $_POST['date'];
+    } else {
+        $date = date('Y-m-d');
+    }
+
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $autre4 = $_POST['autre4'];

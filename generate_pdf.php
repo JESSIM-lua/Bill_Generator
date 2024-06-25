@@ -11,14 +11,22 @@ if ($conn->connect_error) {
     die("La connexion a échoué : " . $conn->connect_error);
 }
 
+// Définir le fuseau horaire de la France
+date_default_timezone_set('Europe/Paris');
+
+// Récupération de la date et de l'heure actuelles
+$current_date = date('Y-m-d');
+$current_time = date('H:i:s');
+
 // Vérification de la présence des paramètres nécessaires
-if (isset($_GET["id"]) && isset($_GET["date"]) && isset($_GET["nom"]) && isset($_GET["prenom"]) && isset($_GET["autre4"]) && isset($_GET["autre5"]) && isset($_GET["autre6"]) && isset($_GET["autre"]) && isset($_GET["autre2"]) && isset($_GET["autre3"]) && isset($_GET["var"]) && isset($_GET["DebutAcc"])) {
+if (isset($_GET["id"]) && isset($_GET["nom"]) && isset($_GET["prenom"]) && isset($_GET["autre4"]) && isset($_GET["autre5"]) && isset($_GET["autre6"]) && isset($_GET["autre"]) && isset($_GET["autre2"]) && isset($_GET["autre3"]) && isset($_GET["var"]) && isset($_GET["DebutAcc"])) {
     // Inclusion de la classe TCPDF
     require_once('tcpdf/tcpdf.php');
 
     // Récupération et nettoyage des valeurs des paramètres GET
     $id = htmlspecialchars($_GET["id"]);
-    $date = htmlspecialchars($_GET["date"]);
+    $date = isset($_GET["date"]) ? htmlspecialchars($_GET["date"]) : $current_date;
+    $time = $current_time; // Utilisation de l'heure actuelle
     $nom = htmlspecialchars($_GET["nom"]);
     $prenom = htmlspecialchars($_GET["prenom"]);
     $autre4 = htmlspecialchars($_GET["autre4"]);
@@ -74,19 +82,19 @@ if (isset($_GET["id"]) && isset($_GET["date"]) && isset($_GET["nom"]) && isset($
     .container {
         margin: 0;
         padding: 0;
-        border: 1px solid #ccc;
+        border: 1px solid #000;
         border-radius: 5px;
     }
 
     .header, .info, .right-div {
         margin: 2px 0;
         padding: 0;
-        border: 1px solid #ccc;
+        border: 1px solid #000;
         border-radius: 2px;
     }
 
     .footer {
-        border: 1px solid #ccc;
+        border: 1px solid #000;
         border-radius: 2px;
         text-align: left;
         margin: 0;
@@ -112,41 +120,56 @@ if (isset($_GET["id"]) && isset($_GET["date"]) && isset($_GET["nom"]) && isset($
         display: flex;
         justify-content: space-between;
     }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        text-align: center;
+        padding: 5px;
+    }
+
+    th {
+        font-weight: bold;
+    }
     </style>';
 
     // Construction du contenu HTML à inclure dans le PDF
     $html = '
     ' . $style . '
         <img src="logo.png" width="80" height="80">
-        <p class="date">' . $date . '</p>
+        <p class="date">' . $date . ' ' . $time . '</p> <!-- Affichage de la date et de l\'heure -->
         <p>Fix My Phone<br>26 Cours Gambetta<br>69007 Lyon<br>Tél : 09 82 27 39 93<br></p><p class="date"><br><strong>' . $nom . ' ' . $prenom . '</strong><br>' . $autre4 . '<br> ' . $autre5 . ' ' . $autre6 . '<br>Tél : ' . $autre . '<br></p>
             <h1>Facture n°' . $id . '</h1>
             <div class="container">
-<table style="width: 100%; border-collapse: collapse;">
+<table>
     <thead>
         <tr>
-            <th style="border-bottom: 2px solid black;">Produit</th>
-            <th style="border-bottom: 2px solid black;">PRIX</th>
-            <th style="border-bottom: 2px solid black;">QTÉ</th>
-            <th style="border-bottom: 2px solid black;">MONTANT</th>
+            <th>Produit</th>
+            <th>PRIX</th>
+            <th>QTÉ</th>
+            <th>MONTANT</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>' . $autre2 .' <br> IMEI: ' . $autre3 .'</td>
-            <td>' . $debutAcc .'</td>
+            <td>' . $autre2 . ($autre3 ? ' <br> Remarque: ' . $autre3 : '') . '</td>
+            <td>' . $debutAcc . '</td>
             <td>1</td>
-            <td>' . $debutAcc.'€</td>
+            <td>' . $debutAcc . '€</td>
         </tr>';
 
     // Ajout des téléphones supplémentaires
     foreach ($phones as $phone) {
         $html .= '
         <tr>
-            <td>' . htmlspecialchars($phone['marque']) .' <br> IMEI: ' . htmlspecialchars($phone['imei']) .'</td>
-            <td>' . htmlspecialchars($phone['prix']) .'</td>
+            <td>' . htmlspecialchars($phone['marque']) . ($phone['imei'] ? ' <br> Remarque: ' . htmlspecialchars($phone['imei']) : '') . '</td>
+            <td>' . htmlspecialchars($phone['prix']) . '</td>
             <td>1</td>
-            <td>' . htmlspecialchars($phone['prix']).'€</td>
+            <td>' . htmlspecialchars($phone['prix']) . '€</td>
         </tr>';
     }
 
@@ -155,7 +178,7 @@ if (isset($_GET["id"]) && isset($_GET["date"]) && isset($_GET["nom"]) && isset($
     <tfoot>
         <tr>
             <td colspan="3" style="text-align: right;">HTTC: </td>
-            <td>' . $total * 0.8 .'€</td>
+            <td>' . $total * 0.8 . '€</td>
         </tr>
         <tr>
             <td colspan="3" style="text-align: right;">TVA</td>
@@ -163,7 +186,7 @@ if (isset($_GET["id"]) && isset($_GET["date"]) && isset($_GET["nom"]) && isset($
         </tr>
         <tr>
             <td colspan="3" style="text-align: right;">TOTAL</td>
-            <td>' . $total .'€</td>
+            <td>' . $total . '€</td>
         </tr>
     </tfoot>
 </table>
@@ -226,6 +249,6 @@ if (isset($_GET["id"]) && isset($_GET["date"]) && isset($_GET["nom"]) && isset($
         $parametres_manquants[] = "DebutAcc";
     }
 
-    echo "Les paramètres suivants sont manquants : " . implode(", ", $parametres_manquants);
+    echo "Les paramètres suivants sont manquants : " . implode(", ", $parametres_manquants) . ". Le fichier PDF ne peut pas être généré.";
 }
 ?>

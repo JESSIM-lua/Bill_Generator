@@ -6,6 +6,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.jsdelivr.net/npm/signature_pad"></script>
     <title>Site PHP</title>
+    <style>
+        /* Ajoutez vos styles CSS personnalisés ici */
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .btnn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btnn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -125,10 +142,17 @@
             <label>Téléphone ${index}:</label>
             <input type="text" name="autre2_${index}" placeholder="Marque et Modèle" required><br>
             <input type="text" name="autre3_${index}" placeholder="IMEI" required><br>
-            <input type="text" name="prix_${index}" placeholder="€" required><br>
+            <input type="text" name="prix_${index}" placeholder="€" required>
+            <button type="button" class="btnn btnn-small" onclick="supprimerTelephone(this)">Supprimer</button>
+            <br>
         `;
 
         phonesDiv.appendChild(newPhoneDiv);
+    }
+
+    function supprimerTelephone(button) {
+        var divToRemove = button.parentNode;
+        divToRemove.parentNode.removeChild(divToRemove);
     }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>

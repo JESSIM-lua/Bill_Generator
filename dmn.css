@@ -7,33 +7,43 @@
 /* admin.css */
 
 /* Styles généraux pour la page d'administration */
+/* Styles généraux pour la page d'administration */
 body {
     font-family: Arial, sans-serif;
     background-color: #f8f9fa;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: 100%;
+    overflow-x: auto; /* Ajout d'un défilement horizontal si nécessaire */
 }
 
 h1 {
-    margin-bottom: 20px;
     text-align: center;
     color: #007bff;
 }
 
 .form-inline {
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .table-responsive {
     margin-top: 20px;
+    overflow-x: auto; /* Défilement horizontal pour la table si nécessaire */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .table th, .table td {
     vertical-align: middle;
+    padding: 8px;
+    text-align: center;
 }
 
 .btn {
@@ -58,3 +68,6 @@ h1 {
     margin-right: 10px;
     font-weight: bold;
 }
+
+
+

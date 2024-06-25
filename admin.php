@@ -9,7 +9,8 @@
         }
     </script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="adm.css">
+    <link rel="stylesheet" href="dmn.css">
+    <link rel="stylesheet" href="resp.css"> 
 </head>
 <body>
 <div class="container">

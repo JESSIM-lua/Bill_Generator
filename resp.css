@@ -4,14 +4,6 @@
 	Description : Responsive du site  */
 /* Styles responsifs */
 @media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .form-row {
-        display: block;
-    }
-    
     .form-row input {
         width: 100%;
         margin-right: 0;
@@ -20,10 +12,6 @@
     .form-row label {
         margin-bottom: 5px;
         display: block;
-    }
-    
-    .table-responsive {
-        overflow-x: auto;
     }
 }
 

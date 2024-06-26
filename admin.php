@@ -1,3 +1,12 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,22 +28,25 @@
         <input class="form-control mr-sm-2" type="search" placeholder="Rechercher par N° Facture" aria-label="Search" name="search" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Rechercher</button>
     </form>
-
 <?php
-$servername = "db"; 
+
+$servername = "db";
 $username = "root";
-$password = "rootpassword"; 
+$password = "rootpassword";
 $dbname = "facture";
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-    die("<div class='alert alert-danger'>La connexion a échoué : " . $conn->connect_error . "</div>");
+    die("La connexion a échoué : " . $conn->connect_error);
 }
+
+$user_id = $_SESSION['user_id'];
 
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $conn->prepare("DELETE FROM form WHERE id = ?");
-    $stmt->bind_param("i", $id);
+    $stmt = $conn->prepare("DELETE FROM form WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $id, $user_id);
 
     if ($stmt->execute()) {
         echo "<div class='alert alert-success'>Enregistrement supprimé avec succès.</div>";
@@ -45,15 +57,17 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
 }
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
-$sql = "SELECT * FROM form";
+$sql = "SELECT * FROM form WHERE user_id = ?";
 if (!empty($search)) {
-    $sql .= " WHERE id = ?";
+    $sql .= " AND id = ?";
 }
 
 $stmt = $conn->prepare($sql);
 
 if (!empty($search)) {
-    $stmt->bind_param("i", $search);
+    $stmt->bind_param("ii", $user_id, $search);
+} else {
+    $stmt->bind_param("i", $user_id);
 }
 
 $stmt->execute();
@@ -174,6 +188,32 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
+</div>
+
+<script>
+    function ajouterTelephone(factureId) {
+        var phonesDiv = document.getElementById('phones' + factureId);
+        var index = phonesDiv.children.length + 1;
+
+        var newPhoneDiv = document.createElement('div');
+        newPhoneDiv.className = 'form-row';
+        newPhoneDiv.innerHTML = `
+            <label>Téléphone ${index}:</label>
+            <input type="hidden" name="new_phone_${index}" value="new">
+            <input type="text" name="autre2_${index}" placeholder="Produit" required>
+            <input type="text" name="autre3_${index}" placeholder="Remarque" required>
+            <input type="text" name="prix_${index}" placeholder="Prix" required>
+        `;
+
+        phonesDiv.appendChild(newPhoneDiv);
+    }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
 </div>
 
 <script>

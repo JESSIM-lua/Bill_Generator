@@ -1,29 +1,25 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
 $servername = "db";
 $username = "root";
 $password = "rootpassword";
 $dbname = "facture";
 
-// Connexion à la base de données
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Vérifier la connexion
 if ($conn->connect_error) {
     die("La connexion a échoué : " . $conn->connect_error);
 }
 
-// Définir le fuseau horaire de la France
-date_default_timezone_set('Europe/Paris');
+$user_id = $_SESSION['user_id'];
 
-// Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Vérifier si la date est fournie et valide, sinon utiliser la date actuelle
-    if (!empty($_POST['date'])) {
-        $date = $_POST['date'];
-    } else {
-        $date = date('Y-m-d');
-    }
-
+    $date = empty($_POST['date']) ? date('Y-m-d H:i:s') : $_POST['date'];
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $autre4 = $_POST['autre4'];
@@ -35,15 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $var = $_POST['var'];
     $debutAcc = $_POST['DebutAcc'];
 
-    // Préparer et exécuter la requête d'insertion pour la table form
-    $stmt = $conn->prepare("INSERT INTO form (date, var, nom, prenom, autre, autre2, autre3, autre4, autre5, autre6, DebutAcc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssssssss", $date, $var, $nom, $prenom, $autre, $autre2, $autre3, $autre4, $autre5, $autre6, $debutAcc);
+    $stmt = $conn->prepare("INSERT INTO form (user_id, date, var, nom, prenom, autre, autre2, autre3, autre4, autre5, autre6, DebutAcc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("isssssssssss", $user_id, $date, $var, $nom, $prenom, $autre, $autre2, $autre3, $autre4, $autre5, $autre6, $debutAcc);
 
     if ($stmt->execute()) {
-        // Récupérer l'ID de la facture insérée
         $facture_id = $stmt->insert_id;
 
-        // Préparer les téléphones supplémentaires
         $phones = [];
         foreach ($_POST as $key => $value) {
             if (preg_match('/^autre2_\d+$/', $key)) {
@@ -58,14 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // Insérer les téléphones supplémentaires dans la table phones
         foreach ($phones as $phone) {
             $stmt_phone = $conn->prepare("INSERT INTO phones (facture_id, marque, imei, prix) VALUES (?, ?, ?, ?)");
             $stmt_phone->bind_param("isss", $facture_id, $phone['marque'], $phone['imei'], $phone['prix']);
             $stmt_phone->execute();
         }
 
-        // Rediriger vers la page de génération du PDF avec les informations nécessaires
         $queryParams = http_build_query([
             'id' => $facture_id,
             'date' => $date,

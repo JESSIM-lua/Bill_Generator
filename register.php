@@ -15,23 +15,36 @@ if ($conn->connect_error) {
 // Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    // Préparer et exécuter la requête d'insertion pour la table users
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $username, $email, $password);
+    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+    $stmt->bind_param("ss", $username, $password);
 
     if ($stmt->execute()) {
-        // Rediriger vers la page de connexion avec un message de succès
-        header("Location: login.php?message=Utilisateur créé avec succès");
-        exit;
+        header("Location: login.php");
     } else {
-        echo "Erreur lors de l'insertion : " . $stmt->error;
+        echo "Error: " . $stmt->error;
     }
-
     $stmt->close();
 }
-
 $conn->close();
 ?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un compte</title>
+</head>
+<body>
+    <h2>Créer un compte</h2>
+    <form action="register.php" method="post">
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" name="username" required><br>
+        <label for="email">Email :</label>
+        <input type="email" name="email" required><br>
+        <label for="password">Mot de passe :</label>
+        <input type="password" name="password" required><br>
+        <button type="submit">S'inscrire</button>
+    </form>
+</body>
+</html>

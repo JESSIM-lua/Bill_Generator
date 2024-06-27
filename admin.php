@@ -1,52 +1,29 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
-    exit;
+    exit();
 }
 
-?>
+$user_id = $_SESSION['user_id'];
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Affichage et modification de données</title>
-    <script>
-        function showEditForm(id) {
-            var editForm = document.getElementById('editForm' + id);
-            editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
-        }
-    </script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="dmn.css">
-    <link rel="stylesheet" href="resp.css"> 
-</head>
-<body>
-<div class="container">
-    <h1>Administration des Factures</h1>
-    <form method="GET" action="admin.php" class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Rechercher par N° Facture" aria-label="Search" name="search" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Rechercher</button>
-    </form>
-<?php
-
+// Connexion à la base de données
 $servername = "db";
 $username = "root";
 $password = "rootpassword";
 $dbname = "facture";
-
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("La connexion a échoué : " . $conn->connect_error);
 }
 
-$user_id = $_SESSION['user_id'];
-
+// Gérer l'action de suppression
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $conn->prepare("DELETE FROM form WHERE id = ? AND user_id = ?");
-    $stmt->bind_param("ii", $id, $user_id);
+    $stmt = $conn->prepare("DELETE FROM form WHERE user_id = ? AND id = ?");
+    $stmt->bind_param("ii", $user_id, $id);
 
     if ($stmt->execute()) {
         echo "<div class='alert alert-success'>Enregistrement supprimé avec succès.</div>";
@@ -56,6 +33,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     $stmt->close();
 }
 
+// Rechercher les factures spécifiques à l'utilisateur
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $sql = "SELECT * FROM form WHERE user_id = ?";
 if (!empty($search)) {
@@ -73,6 +51,32 @@ if (!empty($search)) {
 $stmt->execute();
 $result = $stmt->get_result();
 
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Administration des Factures</title>
+    <script>
+        function showEditForm(id) {
+            var editForm = document.getElementById('editForm' + id);
+            editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dmn.css">
+    <link rel="stylesheet" href="resp.css"> 
+</head>
+<body>
+<div class="container">
+    <h1>Administration des Factures</h1>
+    <form method="GET" action="admin.php" class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Rechercher par N° Facture" aria-label="Search" name="search" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Rechercher</button>
+    </form>
+
+<?php
 if ($result->num_rows > 0) {
     echo "<div class='table-responsive'>
     <table class='table table-striped table-hover'>
@@ -97,12 +101,12 @@ if ($result->num_rows > 0) {
     <tbody>";
 
     while($row = $result->fetch_assoc()) {
-        $facture_id = $row["id"];
+        $form_id = $row["id"];
 
-        // Récupérer les téléphones supplémentaires pour chaque facture
+        // Rechercher les téléphones supplémentaires pour chaque facture
         $phones = [];
-        $stmt_phones = $conn->prepare("SELECT * FROM phones WHERE facture_id = ?");
-        $stmt_phones->bind_param("i", $facture_id);
+        $stmt_phones = $conn->prepare("SELECT * FROM phones WHERE user_id = ? AND form_id = ?");
+        $stmt_phones->bind_param("ii", $user_id, $form_id);
         $stmt_phones->execute();
         $result_phones = $stmt_phones->get_result();
         while ($phone = $result_phones->fetch_assoc()) {
@@ -132,13 +136,14 @@ if ($result->num_rows > 0) {
         <td>
             <a href='?action=delete&id=".$row["id"]."'>Supprimer</a> | 
             <a href='#' onclick='showEditForm(".$row["id"].")'>Modifier</a> | 
-            <a href='generate_pdf.php?id=".$row["id"]."&date=".$row["date"]."&prenom=".$row["prenom"]."&nom=".$row["nom"]."&var=".$row["var"]."&autre=".$row["autre"]."&autre2=".$row["autre2"]."&autre3=".$row["autre3"]."&autre4=".$row["autre4"]."&autre5=".$row["autre5"]."&autre6=".$row["autre6"]."&DebutAcc=".$row["DebutAcc"]."' target='_blank'>Télécharger PDF</a>
+            <a href='generate_pdf.php?id=".$row["id"]."&user_id=".$user_id."&form_id=".$row["id"]."&date=".$row["date"]."&prenom=".$row["prenom"]."&nom=".$row["nom"]."&var=".$row["var"]."&autre=".$row["autre"]."&autre2=".$row["autre2"]."&autre3=".$row["autre3"]."&autre4=".$row["autre4"]."&autre5=".$row["autre5"]."&autre6=".$row["autre6"]."&DebutAcc=".$row["DebutAcc"]."' target='_blank'>Télécharger PDF</a>
         </td>
         </tr>
         <tr id='editForm".$row["id"]."' style='display: none;'>
             <td colspan='13'>
                 <form action='modifier.php' method='post'>
                     <input type='hidden' name='id' value='".$row["id"]."'>
+                    <input type='hidden' name='user_id' value='".$user_id."'>
                     <div class='form-row'>
                         <input type='text' name='date' value='".$row["date"]."' placeholder='Date'>
                         <input type='text' name='nom' value='".$row["nom"]."' placeholder='Nom'>
@@ -158,7 +163,7 @@ if ($result->num_rows > 0) {
                         <input type='text' name='DebutAcc' value='".$row["DebutAcc"]."' placeholder='Prix'>
                         <input type='text' name='var' value='".$row["var"]."' placeholder='Type'>
                     </div>
-                    <div id='phones".$facture_id."'>";
+                    <div id='phones".$form_id."'>";
 
         // Affichage des téléphones supplémentaires
         $phone_index = 1;
@@ -175,7 +180,7 @@ if ($result->num_rows > 0) {
         }
         echo "
                     </div>
-                    <button type='button' onclick='ajouterTelephone($facture_id)' class='btn btn-secondary'>Ajouter Téléphone</button><br><br>
+                    <button type='button' onclick='ajouterTelephone($form_id)' class='btn btn-secondary'>Ajouter Téléphone</button><br><br>
                     <input type='submit' value='Enregistrer' class='btn btn-primary'>
                 </form>
             </td>
@@ -191,34 +196,8 @@ $conn->close();
 </div>
 
 <script>
-    function ajouterTelephone(factureId) {
-        var phonesDiv = document.getElementById('phones' + factureId);
-        var index = phonesDiv.children.length + 1;
-
-        var newPhoneDiv = document.createElement('div');
-        newPhoneDiv.className = 'form-row';
-        newPhoneDiv.innerHTML = `
-            <label>Téléphone ${index}:</label>
-            <input type="hidden" name="new_phone_${index}" value="new">
-            <input type="text" name="autre2_${index}" placeholder="Produit" required>
-            <input type="text" name="autre3_${index}" placeholder="Remarque" required>
-            <input type="text" name="prix_${index}" placeholder="Prix" required>
-        `;
-
-        phonesDiv.appendChild(newPhoneDiv);
-    }
-</script>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
-</html>
-</div>
-
-<script>
-    function ajouterTelephone(factureId) {
-        var phonesDiv = document.getElementById('phones' + factureId);
+    function ajouterTelephone(formId) {
+        var phonesDiv = document.getElementById('phones' + formId);
         var index = phonesDiv.children.length + 1;
 
         var newPhoneDiv = document.createElement('div');

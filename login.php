@@ -15,12 +15,12 @@ if ($conn->connect_error) {
 
 $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
 
-// Vérifier si le formulaire a été soumis
+session_start();
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Préparer et exécuter la requête pour vérifier les informations d'identification
     $stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -30,21 +30,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->num_rows > 0) {
         $stmt->fetch();
         if (password_verify($password, $hashed_password)) {
-            // Les informations d'identification sont correctes, créer une session pour l'utilisateur
             $_SESSION['user_id'] = $user_id;
-            $_SESSION['username'] = $username;
             header("Location: form.php");
-            exit;
         } else {
-            $message = "Nom d'utilisateur ou mot de passe incorrect";
+            echo "Incorrect password.";
         }
     } else {
-        $message = "Nom d'utilisateur ou mot de passe incorrect";
+        echo "No user found.";
     }
-
     $stmt->close();
 }
-
 $conn->close();
 ?>
 

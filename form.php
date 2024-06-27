@@ -41,6 +41,8 @@ if (!isset($_SESSION['user_id'])) {
     </label>
 
     <form id="myForm" action="submit_form.php" method="post">
+    <input type="hidden" name="form_id" value="<?php echo $form_id; ?>">
+
         <div class="form-row">
             <div class="form-group">
                 <label for="date">Entrez la Date:</label>

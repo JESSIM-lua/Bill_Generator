@@ -14,6 +14,7 @@ if ($conn->connect_error) {
 
 // Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user_id = $_POST['user_id']; // Assurez-vous que ce champ est inclus dans le formulaire
     $id = $_POST['id'];
     $date = $_POST['date'];
     $nom = $_POST['nom'];
@@ -28,8 +29,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $debutAcc = $_POST['DebutAcc'];
 
     // Préparer et exécuter la requête de mise à jour pour la table form
-    $stmt = $conn->prepare("UPDATE form SET date = ?, var = ?, nom = ?, prenom = ?, autre = ?, autre2 = ?, autre3 = ?, autre4 = ?, autre5 = ?, autre6 = ?, DebutAcc = ? WHERE id = ?");
-    $stmt->bind_param("sssssssssssi", $date, $var, $nom, $prenom, $autre, $autre2, $autre3, $autre4, $autre5, $autre6, $debutAcc, $id);
+    $stmt = $conn->prepare("UPDATE form SET date = ?, var = ?, nom = ?, prenom = ?, autre = ?, autre2 = ?, autre3 = ?, autre4 = ?, autre5 = ?, autre6 = ?, DebutAcc = ? WHERE user_id = ? AND id = ?");
+    if ($stmt === false) {
+        die("Erreur lors de la préparation de la requête : " . $conn->error);
+    }
+    $stmt->bind_param("ssssssssssssi", $date, $var, $nom, $prenom, $autre, $autre2, $autre3, $autre4, $autre5, $autre6, $debutAcc, $user_id, $id);
 
     if ($stmt->execute()) {
         // Gérer les téléphones existants et nouveaux
@@ -43,12 +47,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (isset($_POST["phone_id_$index"])) {
                     // Mettre à jour le téléphone existant
                     $phone_id = $_POST["phone_id_$index"];
-                    $stmt_phone = $conn->prepare("UPDATE phones SET marque = ?, imei = ?, prix = ? WHERE id = ?");
-                    $stmt_phone->bind_param("sssi", $marque, $imei, $prix, $phone_id);
+                    $stmt_phone = $conn->prepare("UPDATE phones SET marque = ?, imei = ?, prix = ? WHERE user_id = ? AND form_id = ? AND id = ?");
+                    if ($stmt_phone === false) {
+                        die("Erreur lors de la préparation de la requête de mise à jour du téléphone : " . $conn->error);
+                    }
+                    $stmt_phone->bind_param("sssiii", $marque, $imei, $prix, $user_id, $id, $phone_id);
                 } else {
                     // Insérer un nouveau téléphone
-                    $stmt_phone = $conn->prepare("INSERT INTO phones (facture_id, marque, imei, prix) VALUES (?, ?, ?, ?)");
-                    $stmt_phone->bind_param("isss", $id, $marque, $imei, $prix);
+                    $stmt_phone = $conn->prepare("INSERT INTO phones (user_id, form_id, marque, imei, prix) VALUES (?, ?, ?, ?, ?)");
+                    if ($stmt_phone === false) {
+                        die("Erreur lors de la préparation de la requête d'insertion du téléphone : " . $conn->error);
+                    }
+                    $stmt_phone->bind_param("iisss", $user_id, $id, $marque, $imei, $prix);
                 }
                 $stmt_phone->execute();
             }
